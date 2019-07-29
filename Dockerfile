@@ -44,11 +44,19 @@ RUN echo "@community https://nl.alpinelinux.org/alpine/v3.8/community" >> /etc/a
  && composer global require hirak/prestissimo \
  && mkdir -p /flarum/app \
  && chown -R $UID:$GID /flarum \
- && COMPOSER_CACHE_DIR="/tmp" su-exec $UID:$GID composer create-project flarum/flarum /flarum/app $VERSION --stability=beta \
+ && COMPOSER_CACHE_DIR="/tmp" su-exec $UID:$GID composer create-project flarum/flarum /flarum/app $VERSION \
+ && cd /flarum/app \
+ && composer require flagrow/bazaar \
+ && composer require milescellar/lang-french \
+ && composer require rooaaar/lang-french-extended \
+ && composer require fof/byobu \
+ && composer require fof/user-directory \
+ && composer require flagrow/upload \
  && composer clear-cache \
  && rm -rf /flarum/.composer /var/cache/apk/*
 
 COPY rootfs /
+COPY --chown=991:991 rootfs/flarum /flarum
 RUN chmod +x /usr/local/bin/* /services/*/run /services/.s6-svscan/*
 VOLUME /flarum/app/extensions /etc/nginx/conf.d
 EXPOSE 8888
